@@ -1,0 +1,75 @@
+<md-card>
+    <md-card-header>
+        <md-card-title>This is the title of the body</md-card-title>
+        <md-card-subtitle>This is the subtitle of the body</md-card-subtitle>
+    </md-card-header>
+
+    <md-card-content>
+        <md-list>
+            <md-list-item>Item 1</md-list-item>
+            <md-list-item>Item 2</md-list-item>
+            <md-list-item>Item 3</md-list-item>
+        </md-list>
+    </md-card-content>
+
+    <br>
+    <br>
+
+    <md-card-content>
+        <md-list>
+            <div *ngFor="let user of usersJSON.data;">
+                <md-list-item>{{ user.first_name }}, {{ user.last_name }}</md-list-item>
+            </div>
+        </md-list>
+    </md-card-content>
+
+    <br>
+    <br>
+
+    <md-card-content>
+        <md-list>
+            <div *ngFor="let system of systemsJSON.data;">
+                <md-list-item>{{ system.system_name + ", " + system.acronym }}</md-list-item>
+            </div>
+        </md-list>
+    </md-card-content>
+
+    <br>
+    <br>
+
+    <md-card-content>
+        <md-select class="example-form-select">
+            <md-option *ngFor="let user of usersJSON.data;" [value]="user.first_name">
+                {{ user.first_name + " " + user.last_name }}
+            </md-option>
+        </md-select>
+    </md-card-content>
+
+
+    <br>
+    <br>
+
+    <md-card-content>
+        <md-input-container class="example-form-select">
+            <input mdInput placeholder="State" [mdAutocomplete]="auto" [formControl]="userFormControl">
+        </md-input-container>
+
+        <md-autocomplete #auto="mdAutocomplete">
+            <md-option *ngFor="let state of filteredStates | async;" [value]="state">
+                {{ state }}
+            </md-option>
+        </md-autocomplete>
+    </md-card-content>
+
+    <br>
+    <br>
+
+
+
+    <md-card-content>
+        <md-card-footer>
+            FOOTER OF THE BODY
+        </md-card-footer>
+    </md-card-content>
+
+</md-card>
