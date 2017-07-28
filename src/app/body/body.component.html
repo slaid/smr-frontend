@@ -1,19 +1,4 @@
 <md-card>
-    <md-card-header>
-        <md-card-title>This is the title of the body</md-card-title>
-        <md-card-subtitle>This is the subtitle of the body</md-card-subtitle>
-    </md-card-header>
-
-    <md-card-content>
-        <md-list>
-            <md-list-item>Item 1</md-list-item>
-            <md-list-item>Item 2</md-list-item>
-            <md-list-item>Item 3</md-list-item>
-        </md-list>
-    </md-card-content>
-
-    <br>
-    <br>
 
     <md-card-content>
         <md-list>
@@ -49,20 +34,25 @@
     <br>
     <br>
 
+
+
     <md-card-content>
         <md-input-container class="example-form-select">
-            <input mdInput placeholder="State" [mdAutocomplete]="auto" [formControl]="userFormControl">
+            <input mdInput placeholder="User" [mdAutocomplete]="autoUser" [formControl]="userFormControl">
         </md-input-container>
 
-        <md-autocomplete #auto="mdAutocomplete">
-            <md-option *ngFor="let state of filteredStates | async;" [value]="state">
-                {{ state }}
+        <md-autocomplete #autoUser="mdAutocomplete">
+            <md-option *ngFor="let user of filteredUsers | async;" [value]="user" (click)="userSelected = true">
+                {{ user }}
             </md-option>
         </md-autocomplete>
-    </md-card-content>
 
-    <br>
-    <br>
+        <md-select placeholder="System" class="example-form-select" *ngIf="userSelected">
+            <md-option *ngFor="let system of systemsNamesList;" [value]="system">{{ system }}</md-option>
+        </md-select>
+
+
+    </md-card-content>
 
 
 

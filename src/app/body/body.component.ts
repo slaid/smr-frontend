@@ -6,6 +6,7 @@ import 'rxjs/add/operator/map';
 import { UserModel } from '../models/user.model';
 import { SystemModel } from '../models/system.model';
 import { isUndefined } from "util";
+import { User_SystemModel } from '../models/user_system.model';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-][a-zA-Z0-9]+)*$/;
 
@@ -18,88 +19,39 @@ const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA
 export class BodyComponent {
     private apiUsersURL = 'http://localhost:3000/api/users';
     private apiSystemsURL = 'http://localhost:3000/api/systems';
+    private apiUserSystemURL = 'http://localhost:3000/api/user_system';
     usersJSON: any = {};
     filteredUsers: any = [];
     systemsJSON: any = {};
+    usersSystemsJSON: any = [];
     userFormControl: FormControl;
-    filteredStates: any;
+    systemFormControl: FormControl;
     users: Array<UserModel> = [];
+    usersNamesList: Array<string> = [];
     systems: Array<SystemModel> = [];
+    systemsNamesList: Array<string> = [];
+    usersSystems: Array<User_SystemModel>;
+    userSelected: boolean = false;
 
-    states = [
-        'Alabama',
-        'Alaska',
-        'Arizona',
-        'Arkansas',
-        'California',
-        'Colorado',
-        'Connecticut',
-        'Delaware',
-        'Florida',
-        'Georgia',
-        'Hawaii',
-        'Idaho',
-        'Illinois',
-        'Indiana',
-        'Iowa',
-        'Kansas',
-        'Kentucky',
-        'Louisiana',
-        'Maine',
-        'Maryland',
-        'Massachusetts',
-        'Michigan',
-        'Minnesota',
-        'Mississippi',
-        'Missouri',
-        'Montana',
-        'Nebraska',
-        'Nevada',
-        'New Hampshire',
-        'New Jersey',
-        'New Mexico',
-        'New York',
-        'North Carolina',
-        'North Dakota',
-        'Ohio',
-        'Oklahoma',
-        'Oregon',
-        'Pennsylvania',
-        'Rhode Island',
-        'South Carolina',
-        'South Dakota',
-        'Tennessee',
-        'Texas',
-        'Utah',
-        'Vermont',
-        'Virginia',
-        'Washington',
-        'West Virginia',
-        'Wisconsin',
-        'Wyoming',
-    ];
 
     constructor(private http: Http) {
         this.getUsersJSON();
         this.getSystemsJSON();
-
+        this.getUserSystemsJSON();
         this.userFormControl = new FormControl();
         this.filteredUsers = this.userFormControl.valueChanges
             .startWith(null)
             .map(name => this.filterUser(name));
-        this.filteredStates = this.userFormControl.valueChanges
-            .startWith(null)
-            .map(name => this.filterState(name));
     }
 
-    private filterState(val: string) {
-        return val ? this.states.filter(s => s.toLowerCase().indexOf(val.toLowerCase()) === 0) : this.states;
-    }
 
     private filterUser(val: string) {
-        let arrayGenerated = this.users.filter(s => s.getFirstName().concat(" " + s.getLastName()).toLowerCase().indexOf(val.toLowerCase()) === 0);
+        return val ? this.usersNamesList.filter(s => s.toLowerCase().indexOf(val.toLowerCase()) === 0) : this.usersNamesList;
     }
 
+    private filterSystem(val: string) {
+        return val ? this.systemsNamesList.filter(s => s.toLowerCase().indexOf(val.toLowerCase()) === 0) : this.systemsNamesList;
+    }
 
     private createUsers(): void {
         if (!isUndefined(this.usersJSON.data)) {
@@ -112,6 +64,7 @@ export class BodyComponent {
                 let active = this.usersJSON.data[i].active;
                 let user: UserModel = new UserModel(id, first_name, last_name, email, username, active);
                 this.users.push(user);
+                this.usersNamesList.push(first_name + " " + last_name);
             }
         }
     }
@@ -125,6 +78,21 @@ export class BodyComponent {
                 let active = this.systemsJSON.data[i].active;
                 let system: SystemModel = new SystemModel(id, system_name, acronym, active);
                 this.systems.push(system);
+                this.systemsNamesList.push(system_name);
+            }
+        }
+    }
+
+    private createUserSystem(): void {
+        if (!isUndefined(this.usersSystemsJSON.data)) {
+            for (let i=0; i<this.usersSystemsJSON.data.length; i++) {
+                let users_systems_id = parseInt(this.usersSystemsJSON.data[i].users_systems_id);
+                let user_id = parseInt(this.usersSystemsJSON.data[i].user_id);
+                let system_id = parseInt(this.usersSystemsJSON.data[i].system_id);
+                let default_system = this.usersSystemsJSON.data[i].default_system;
+                let active = this.usersSystemsJSON.data[i].active;
+                let user_system: User_SystemModel = new User_SystemModel(users_systems_id, user_id, system_id, default_system, active);
+                this.usersSystems.push(user_system);
             }
         }
     }
@@ -148,5 +116,12 @@ export class BodyComponent {
             this.systemsJSON = data;
             this.createSystems();
         });
+    }
+
+    private getUserSystemsJSON(): void {
+        this.getData(this.apiUserSystemURL).subscribe(data => {
+            console.log(data);
+            this.usersSystemsJSON = data;
+        })
     }
 }
